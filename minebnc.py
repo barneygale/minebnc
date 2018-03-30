@@ -658,7 +658,7 @@ class Upstream(ClientProtocol):
         elif reason == 2:
             self.game['raining'] = True
         elif reason == 3:
-            self.game['game_mode'] = value
+            self.game['game_mode'] = int(value)
 
     # Spawn position ----------------------------------------------------------
 
