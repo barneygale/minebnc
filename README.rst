@@ -10,7 +10,8 @@ welcome.
 Installation
 ------------
 
-Clone this repository and edit ``minebnc.py`` to configure the proxy. Then:
+Clone this repository and copy ``config.py.example`` to ``config.py``. Edit to
+configure the proxy. Then:
 
 .. code-block:: console
 

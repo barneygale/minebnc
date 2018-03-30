@@ -1,32 +1,3 @@
-
-
-# --- Begin editing -----------------------------------------------------------
-
-
-# Server settings
-listen_host = "127.0.0.1"   # IP to listen on
-listen_port = 25566         # Port to listen on
-online_mode = False         # Authenticate connecting players
-whitelist = ["127.0.0.1"]   # IP whitelist. Empty implies no whitelist
-motd = "MineBNC"            # Message of the day
-
-
-# Client settings
-connect_host = "127.0.0.1"  # IP to connect to
-connect_port = 25565        # Port to connect to
-username = "minebnc"        # Username to use for offline-mode servers
-email = ""                  # Mojang email to use for online-mode servers
-password = ""               # Mojang password to use for online-mode servers
-
-
-# General settings
-protocol_version = 340      # Protocol version to use
-scrollback_limit = 100      # Maximum number of chat messages to replay
-log_level = "INFO"
-
-
-# --- End editing -------------------------------------------------------------
-
 import collections
 import os.path
 
@@ -37,6 +8,8 @@ from quarry.types.chunk import BlockArray, LightArray
 from quarry.net.auth import Profile, OfflineProfile
 from quarry.net.client import ClientFactory, ClientProtocol
 from quarry.net.server import ServerFactory, ServerProtocol
+
+from config import *
 
 
 # Globals ---------------------------------------------------------------------
