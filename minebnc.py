@@ -281,7 +281,7 @@ class Upstream(ClientProtocol):
             downstream.send_packet(
                 'plugin_message',
                 bt.pack_string('REGISTER'),
-                "\x00".join(self.game['channels']))
+                b"\x00".join(self.game['channels']))
         downstream.send_packet(
             'plugin_message',
             bt.pack_string('MC|Brand'),
@@ -1121,7 +1121,7 @@ class Upstream(ClientProtocol):
         channel = buff.unpack_string()
 
         if channel in ("REGISTER", "UNREGISTER"):
-            channels = set(buff.read().split("\x00"))
+            channels = set(buff.read().split(b"\x00"))
             if channel == "REGISTER":
                 self.game['channels'] |= channels
             else:
