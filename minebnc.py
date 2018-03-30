@@ -531,8 +531,8 @@ class Upstream(ClientProtocol):
         if players_header_footer:
             downstream.send_packet(
                 'player_list_header_footer',
-                bt.pack_string(players_header_footer[0]),
-                bt.pack_string(players_header_footer[1]))
+                bt.pack_chat(players_header_footer[0]),
+                bt.pack_chat(players_header_footer[1]))
 
         # Send 'Player List Item'
         data = b""
