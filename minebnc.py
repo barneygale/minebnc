@@ -1022,15 +1022,27 @@ class Upstream(ClientProtocol):
         action = buff.unpack_varint()
         for _ in range(buff.unpack_varint()):
             uuid = buff.unpack_uuid()
+
+            # Delete entry
             if action == 4:
                 if uuid in self.game['players']:
                     del self.game['players'][uuid]
                 continue
+
+            # Update entry
             elif uuid in self.game['players']:
                 player = self.game['players'][uuid]
-            else:
+
+            # Create entry
+            elif action == 0:
                 player = self.game['players'][uuid] = {'uuid': uuid}
 
+            # Invalid data from server
+            else:
+                buff.discard()
+                continue
+
+            # Read fields
             if action == 0:
                 player['name'] = buff.unpack_string()
                 player['properties'] = []
