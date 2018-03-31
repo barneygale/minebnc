@@ -18,6 +18,17 @@ class WorldPlugin(Plugin):
 
         # TODO: adjust lighting
 
+    def get_block(self, x, y, z):
+        cx, bx = divmod(x, 16)
+        cy, by = divmod(y, 16)
+        cz, bz = divmod(z, 16)
+
+        chunk = self.chunks.get((cx, cz))
+        if chunk:
+            return chunk['sections'][cy][0][by*256 + bz*16 + bx]
+        else:
+            return 0
+
     def attach(self):
         for coords, chunk in self.chunks.items():
             x, z = coords
@@ -40,6 +51,17 @@ class WorldPlugin(Plugin):
                 *[self.bt.pack_nbt(entity)
                   for entity in chunk['block_entities'].values()])
 
+            for coords, action in chunk['block_actions'].items():
+                x, y, z = coords
+                block_id, action_id, action_value = action
+
+                if block_id == (self.get_block(x, y, z) >> 4):
+                    self.downstream.send_packet(
+                        'block_action',
+                        self.bt.pack_position(x, y, z),
+                        self.bt.pack('BB', action_id, action_value),
+                        self.bt.pack_varint(block_id))
+
     def packet_downstream_join_game(self, buff):
         self.dimension = buff.unpack('ibi')[2]
         buff.discard()
@@ -56,7 +78,8 @@ class WorldPlugin(Plugin):
         if contiguous:
             chunk = self.chunks[x, z] = {
                 'sections': [None] * 16,
-                'block_entities': {}}
+                'block_entities': {},
+                'block_actions': {}}
         else:
             chunk = self.chunks[x, z]
 
@@ -127,3 +150,13 @@ class WorldPlugin(Plugin):
             block_entities[x, y, z] = new_tag
         elif old_tag and new_tag:
             old_tag.update(new_tag)
+
+    def packet_downstream_block_action(self, buff):
+        x, y, z = buff.unpack_position()
+        action_id, action_value = buff.unpack('BB')
+        block_id = buff.unpack_varint()
+
+        if block_id == (self.get_block(x, y, z) >> 4):
+            chunk_x, chunk_z = x // 16, z // 16
+            self.chunks[chunk_x, chunk_z]['block_actions'][x, y, z] = (
+                (block_id, action_id, action_value))
