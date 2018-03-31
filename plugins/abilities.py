@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class AbilitiesPlugin(Plugin):
     def setup(self):
         self.invulnerable = False

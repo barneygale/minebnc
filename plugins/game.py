@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class GamePlugin(Plugin):
     def setup(self):
         self.player_id = 0
@@ -30,8 +31,9 @@ class GamePlugin(Plugin):
             self.bt.pack_position(*self.spawn_position))
 
         if self.raining:
-            self.downstream.send_packet('change_game_state', self.bt.pack('bf', 2, 0))
-
+            self.downstream.send_packet(
+                'change_game_state',
+                self.bt.pack('bf', 2, 0))
 
     def packet_downstream_join_game(self, buff):
         self.player_id = buff.unpack('i')

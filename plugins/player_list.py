@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class PlayerListPlugin(Plugin):
     def setup(self):
         self.players = {}
@@ -22,10 +23,12 @@ class PlayerListPlugin(Plugin):
             for property in player['properties']:
                 data += self.bt.pack_string(property['name'])
                 data += self.bt.pack_string(property['value'])
-                data += self.bt.pack_optional(self.bt.pack_string, property['signature'])
+                data += self.bt.pack_optional(
+                    self.bt.pack_string, property['signature'])
             data += self.bt.pack_varint(player['game_mode'])
             data += self.bt.pack_varint(player['ping'])
-            data += self.bt.pack_optional(self.bt.pack_chat, player['display_name'])
+            data += self.bt.pack_optional(
+                self.bt.pack_chat, player['display_name'])
 
         self.downstream.send_packet(
             'player_list_item',
@@ -76,7 +79,6 @@ class PlayerListPlugin(Plugin):
                 player['ping'] = buff.unpack_varint()
             elif action == 3:
                 player['display_name'] = buff.unpack_optional(buff.unpack_chat)
-
 
     def packet_downstream_player_list_header_footer(self, buff):
         self.players_header_footer = buff.unpack_chat(), buff.unpack_chat()

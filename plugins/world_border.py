@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class WorldBorderPlugin(Plugin):
     def setup(self):
         self.x = 0

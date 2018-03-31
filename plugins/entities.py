@@ -40,7 +40,10 @@ class EntitiesPlugin(Plugin):
                     self.bt.pack_varint(entity['id']),
                     self.bt.pack_uuid(entity['uuid']),
                     self.bt.pack('ddd', entity['x'], entity['y'], entity['z']),
-                    self.bt.pack('BB', f2b(entity['yaw']), f2b(entity['pitch'])),
+                    self.bt.pack(
+                        'BB',
+                        f2b(entity['yaw']),
+                        f2b(entity['pitch'])),
                     self.bt.pack_entity_metadata(entity['metadata']))
 
             # Send 'Spawn Mob'
@@ -56,7 +59,11 @@ class EntitiesPlugin(Plugin):
                         f2b(entity['yaw']),
                         f2b(entity['pitch']),
                         f2b(entity['head_pitch'])),
-                    self.bt.pack('hhh', entity['dx'], entity['dy'], entity['dz']),
+                    self.bt.pack(
+                        'hhh',
+                        entity['dx'],
+                        entity['dy'],
+                        entity['dz']),
                     self.bt.pack_entity_metadata(entity['metadata']))
 
             # Send 'Spawn Object'
@@ -67,9 +74,16 @@ class EntitiesPlugin(Plugin):
                     self.bt.pack_uuid(entity['uuid']),
                     self.bt.pack('b', entity['object_type']),
                     self.bt.pack('ddd', entity['x'], entity['y'], entity['z']),
-                    self.bt.pack('BB', f2b(entity['pitch']), f2b(entity['yaw'])),
+                    self.bt.pack(
+                        'BB',
+                        f2b(entity['pitch']),
+                        f2b(entity['yaw'])),
                     self.bt.pack('i', entity['object_data']),
-                    self.bt.pack('hhh', entity['dx'], entity['dy'], entity['dz']))
+                    self.bt.pack(
+                        'hhh',
+                        entity['dx'],
+                        entity['dy'],
+                        entity['dz']))
 
             # Send 'Spawn Painting'
             elif entity['type'] == 'painting':
@@ -78,7 +92,10 @@ class EntitiesPlugin(Plugin):
                     self.bt.pack_varint(entity['id']),
                     self.bt.pack_uuid(entity['uuid']),
                     self.bt.pack_string(entity['painting_type']),
-                    self.bt.pack_position(entity['x'], entity['y'], entity['z']),
+                    self.bt.pack_position(
+                        entity['x'],
+                        entity['y'],
+                        entity['z']),
                     self.bt.pack('b', entity['painting_direction']))
 
             # Send 'Spawn Global Entity'
@@ -143,7 +160,8 @@ class EntitiesPlugin(Plugin):
                     'set_passengers',
                     self.bt.pack_varint(entity['id']),
                     self.bt.pack_varint(len(passengers)),
-                    *[self.bt.pack_varint(passenger) for passenger in passengers])
+                    *[self.bt.pack_varint(passenger)
+                      for passenger in passengers])
 
             # Send 'Attach Entity'
             attached = entity.get('attached')
@@ -171,14 +189,14 @@ class EntitiesPlugin(Plugin):
 
         # Send 'Player Position And Look'
         self.downstream.send_packet(
-        'player_position_and_look',
+            'player_position_and_look',
             self.bt.pack(
-            'dddff',
-            self.player['x'],
-            self.player['y'],
-            self.player['z'],
-            self.player['yaw'],
-            self.player['pitch']),
+                'dddff',
+                self.player['x'],
+                self.player['y'],
+                self.player['z'],
+                self.player['yaw'],
+                self.player['pitch']),
             self.bt.pack('b', 0),
             self.bt.pack_varint(0))
 
@@ -264,7 +282,6 @@ class EntitiesPlugin(Plugin):
         for _ in range(buff.unpack_varint()):
             del self.entities[buff.unpack_varint()]
 
-
     # Entity position ---------------------------------------------------------
 
     def packet_downstream_entity_teleport(self, buff):
@@ -273,7 +290,6 @@ class EntitiesPlugin(Plugin):
         entity['yaw'] = b2f(buff.unpack('B'))
         entity['pitch'] = b2f(buff.unpack('B'))
         entity['on_ground'] = buff.unpack('?')
-
 
     def packet_downstream_entity_look_and_relative_move(self, buff):
         entity = self.entities[buff.unpack_varint()]
@@ -284,13 +300,11 @@ class EntitiesPlugin(Plugin):
         entity['pitch'] = b2f(buff.unpack('B'))
         entity['on_ground'] = buff.unpack('?')
 
-
     def packet_downstream_entity_look(self, buff):
         entity = self.entities[buff.unpack_varint()]
         entity['yaw'] = b2f(buff.unpack('B'))
         entity['pitch'] = b2f(buff.unpack('B'))
         entity['on_ground'] = buff.unpack('?')
-
 
     def packet_downstream_entity_relative_move(self, buff):
         entity = self.entities[buff.unpack_varint()]
@@ -299,16 +313,13 @@ class EntitiesPlugin(Plugin):
         entity['z'] += buff.unpack('h')
         entity['on_ground'] = buff.unpack('?')
 
-
     def packet_downstream_entity_velocity(self, buff):
         entity = self.entities[buff.unpack_varint()]
         entity['dx'], entity['dy'], entity['dz'] = buff.unpack('hhh')
 
-
     def packet_downstream_entity_head_look(self, buff):
         entity = self.entities[buff.unpack_varint()]
         entity['head_yaw'] = b2f(buff.unpack('B'))
-
 
     # Entity misc -------------------------------------------------------------
 
@@ -318,7 +329,6 @@ class EntitiesPlugin(Plugin):
             entity['metadata'] = {}
         for ty_key, val in buff.unpack_entity_metadata().items():
             entity['metadata'][ty_key] = val
-
 
     def packet_downstream_entity_effect(self, buff):
         entity = self.entities[buff.unpack_varint()]
@@ -331,11 +341,9 @@ class EntitiesPlugin(Plugin):
         effect['flags'] = buff.unpack('b')
         entity['effects'][effect['id']] = effect
 
-
     def packet_downstream_remove_entity_effect(self, buff):
         entity = self.entities[buff.unpack_varint()]
         del entity['effects'][buff.unpack('b')]
-
 
     def packet_downstream_entity_equipment(self, buff):
         entity = self.entities[buff.unpack_varint()]
@@ -343,7 +351,6 @@ class EntitiesPlugin(Plugin):
             entity['equipment'] = [{'id': -1} for _ in range(6)]
         idx = buff.unpack_varint()
         entity['equipment'][idx] = buff.unpack_slot()
-
 
     def packet_downstream_set_passengers(self, buff):
         entity = self.entities[buff.unpack_varint()]
@@ -355,7 +362,6 @@ class EntitiesPlugin(Plugin):
         elif self.player.get('vehicle') == entity['id']:
             self.player['vehicle'] = None
 
-
     def packet_downstream_attach_entity(self, buff):
         entity = self.entities[buff.unpack('i')]
         other = buff.unpack('i')
@@ -363,7 +369,6 @@ class EntitiesPlugin(Plugin):
             entity['attached'] = None
         else:
             entity['attached'] = other
-
 
     def packet_downstream_entity_properties(self, buff):
         entity = self.entities[buff.unpack_varint()]
@@ -382,11 +387,9 @@ class EntitiesPlugin(Plugin):
                 property['modifiers'].append(modifier)
             entity['properties'][property['key']] = property
 
-
     def packet_downstream_use_bed(self, buff):
         entity = self.entities[buff.unpack_varint()]
         entity['bed'] = buff.unpack_position()
-
 
     def packet_downstream_animation(self, buff):
         entity = self.entities[buff.unpack_varint()]
@@ -478,7 +481,6 @@ class EntitiesPlugin(Plugin):
         self.player['z'] = vehicle['z'] = buff.unpack('d')
         self.player['yaw'] = vehicle['yaw'] = buff.unpack('f')
         self.player['pitch'] = vehicle['pitch'] = buff.unpack('f')
-
 
     # Player tasks ------------------------------------------------------------
 

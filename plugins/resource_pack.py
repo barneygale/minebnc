@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class ResourcePackPlugin(Plugin):
     def setup(self):
         self.url = None

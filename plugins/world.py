@@ -1,6 +1,7 @@
 from quarry.types.chunk import BlockArray, LightArray
 from plugins import Plugin
 
+
 class WorldPlugin(Plugin):
     def setup(self):
         self.chunks = {}
@@ -82,18 +83,15 @@ class WorldPlugin(Plugin):
                 block_entity_obj['y'],
                 block_entity_obj['z']] = block_entity
 
-
     def packet_downstream_unload_chunk(self, buff):
         x, z = buff.unpack('ii')
         if (x, z) in self.chunks:
             del self.chunks[x, z]
 
-
     def packet_downstream_block_change(self, buff):
         x, y, z = buff.unpack_position()
         block_id = buff.unpack_varint()
         self.set_block(x, y, z, block_id)
-
 
     def packet_downstream_multi_block_change(self, buff):
         chunk_x, chunk_z = buff.unpack('ii')
@@ -106,14 +104,12 @@ class WorldPlugin(Plugin):
                 16 * chunk_z + block_xz & 0x0F,
                 block_id)
 
-
     def packet_downstream_explosion(self, buff):
         x, y, z, radius = buff.unpack('ffff')
         for _ in range(buff.unpack('i')):
             dx, dy, dz = buff.unpack('bbb')
             self.set_block(x + dx, y + dy, z + dz, 0)
         px, py, pz = buff.unpack('fff')
-
 
     def packet_downstream_update_block_entity(self, buff):
         x, y, z = buff.unpack_position()

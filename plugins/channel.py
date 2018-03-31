@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class ChannelPlugin(Plugin):
     def setup(self):
         self.brand = "MineBNC"

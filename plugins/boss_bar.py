@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class BossBarPlugin(Plugin):
     def setup(self):
         self.boss_bars = {}

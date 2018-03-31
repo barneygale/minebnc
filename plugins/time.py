@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class TimePlugin(Plugin):
     def setup(self):
         self.time_world = 0

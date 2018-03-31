@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class InventoryPlugin(Plugin):
     def setup(self):
         self.inventory = [{'id': -1} for _ in range(46)]

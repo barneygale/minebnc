@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class ChatPlugin(Plugin):
     def setup(self):
         self.messages = []

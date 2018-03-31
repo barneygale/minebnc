@@ -1,5 +1,6 @@
 from plugins import Plugin
 
+
 class StatsPlugin(Plugin):
     def setup(self):
         self.health = 0
