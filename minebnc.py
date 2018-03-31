@@ -1039,8 +1039,7 @@ class Upstream(ClientProtocol):
 
             # Invalid data from server
             else:
-                buff.discard()
-                continue
+                player = {}
 
             # Read fields
             if action == 0:
