@@ -30,3 +30,6 @@ class ChannelPlugin(Plugin):
 
         elif channel == "MC|Brand":
             self.brand = buff.unpack_string()
+
+        else:
+            buff.discard()
