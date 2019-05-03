@@ -28,8 +28,6 @@ class Downstream(ServerProtocol):
     def connection_made(self):
         if not upstream:
             self.close()
-        elif whitelist and self.remote_addr.host not in whitelist:
-            self.close()
         else:
             super(Downstream, self).connection_made()
 
@@ -52,8 +50,7 @@ class DownstreamFactory(ServerFactory):
     protocol = Downstream
     max_players = 1
 
-    online_mode = online_mode
-    motd = motd
+    motd = "MineBNC"
     force_protocol_version = protocol_version
     log_level = log_level
 
@@ -142,14 +139,7 @@ class UpstreamFactory(ClientFactory, ReconnectingClientFactory):
 
 @defer.inlineCallbacks
 def run():
-    cache_path = os.path.join(os.path.dirname(__file__), "cache.json")
-    if os.path.exists(cache_path):
-        profile = yield Profile.from_file(profiles_path=cache_path)
-    elif email and password:
-        profile = yield Profile.from_credentials(email, password)
-        profile.to_file(profiles_path=cache_path)
-    else:
-        profile = yield OfflineProfile.from_display_name(username)
+    profile = yield Profile.from_file(display_name)
     downstream_factory = DownstreamFactory()
     downstream_factory.listen(listen_host, listen_port)
     upstream_factory = UpstreamFactory(profile)
