@@ -22,8 +22,9 @@ class InventoryPlugin(Plugin):
             'unlock_recipes',
             self.bt.pack_varint(0),
             self.bt.pack('??', False, False),
+            self.bt.pack('??', False, False),
             self.bt.pack_varint(len(self.recipes)),
-            b"".join(self.bt.pack_varint(recipe_id)
+            b"".join(self.bt.pack_string(recipe_id)
                      for recipe_id in self.recipes),
             self.bt.pack_varint(0))
 
@@ -47,16 +48,17 @@ class InventoryPlugin(Plugin):
 
     def packet_downstream_unlock_recipes(self, buff):
         action = buff.unpack_varint()
-        crafting_book_open, filtering_craftable = buff.unpack('??')
+        crafting_book_open, crafting_book_filtered,  = buff.unpack('??')
+        smelting_book_open, smelting_book_filtered,  = buff.unpack('??')
 
         if action == 0:
             for _ in range(buff.unpack_varint()):
-                self.recipes.add(buff.unpack_varint())
+                self.recipes.add(buff.unpack_string())
             for _ in range(buff.unpack_varint()):
-                self.recipes.add(buff.unpack_varint())
+                self.recipes.add(buff.unpack_string())
         elif action == 1:
             for _ in range(buff.unpack_varint()):
-                self.recipes.add(buff.unpack_varint())
+                self.recipes.add(buff.unpack_string())
         elif action == 2:
             for _ in range(buff.unpack_varint()):
-                self.recipes.remove(buff.unpack_varint())
+                self.recipes.remove(buff.unpack_string())

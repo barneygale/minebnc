@@ -118,7 +118,7 @@ class EntitiesPlugin(Plugin):
         for entity in self.entities.values():
             # Send 'Entity Equipment'
             for idx, equipment in enumerate(entity.get('equipment', [])):
-                if equipment['id'] != -1:
+                if equipment['item'] is not None:
                     self.downstream.send_packet(
                         'entity_equipment',
                         self.bt.pack_varint(entity['id']),
@@ -348,7 +348,7 @@ class EntitiesPlugin(Plugin):
     def packet_downstream_entity_equipment(self, buff):
         entity = self.entities[buff.unpack_varint()]
         if 'equipment' not in entity:
-            entity['equipment'] = [{'id': -1} for _ in range(6)]
+            entity['equipment'] = [{'item': None} for _ in range(6)]
         idx = buff.unpack_varint()
         entity['equipment'][idx] = buff.unpack_slot()
 

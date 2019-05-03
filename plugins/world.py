@@ -39,7 +39,7 @@ class WorldPlugin(Plugin):
                 if not section[0].is_empty():
                     bitmask |= 1 << i
                     data += self.bt.pack_chunk_section(*section)
-            data += self.bt.pack('B'*256, *chunk['biomes'])
+            data += self.bt.pack('I'*256, *chunk['biomes'])
 
             self.downstream.send_packet(
                 'chunk_data',
@@ -88,15 +88,17 @@ class WorldPlugin(Plugin):
                 section = buff.unpack_chunk_section(
                     self.dimension == 0)
             elif self.dimension == 0:
-                section = (BlockArray.empty(), LightArray.empty(),
+                section = (BlockArray.empty(buff.registry),
+                           LightArray.empty(),
                            LightArray.empty())
             else:
-                section = (BlockArray.empty(), LightArray.empty())
+                section = (BlockArray.empty(buff.registry),
+                           LightArray.empty())
 
             chunk['sections'][idx] = section
 
         if contiguous:
-            chunk['biomes'] = buff.unpack('B' * 256)
+            chunk['biomes'] = buff.unpack('I' * 256)
 
         for _ in range(buff.unpack_varint()):
             block_entity = buff.unpack_nbt()
@@ -113,19 +115,19 @@ class WorldPlugin(Plugin):
 
     def packet_downstream_block_change(self, buff):
         x, y, z = buff.unpack_position()
-        block_id = buff.unpack_varint()
-        self.set_block(x, y, z, block_id)
+        block = buff.registry.decode_block(buff.unpack_varint())
+        self.set_block(x, y, z, block)
 
     def packet_downstream_multi_block_change(self, buff):
         chunk_x, chunk_z = buff.unpack('ii')
         for _ in range(buff.unpack_varint()):
             block_xz, block_y = buff.unpack('BB')
-            block_id = buff.unpack_varint()
+            block = buff.registry.decode_block(buff.unpack_varint())
             self.set_block(
                 16 * chunk_x + block_xz >> 4,
                 block_y,
                 16 * chunk_z + block_xz & 0x0F,
-                block_id)
+                block)
 
     def packet_downstream_explosion(self, buff):
         x, y, z, radius = buff.unpack('ffff')
